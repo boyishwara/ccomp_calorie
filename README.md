@@ -1,59 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gamified Calorie Tracker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, gamified calorie tracking web application built with Laravel. It helps users track their daily food intake against personalized calorie targets and motivates them with a beautifully designed, responsive, and interactive "Quest Board" dashboard.
 
-## About Laravel
+## ✨ Features
+- **Gamified Dashboard:** Visual progress circles and engaging alerts when approaching or exceeding daily limits.
+- **Meal Breakdown:** Categorize food logs by Breakfast, Lunch, Dinner, and Snacks.
+- **Historical Progress:** Easily track your performance over the past few days.
+- **Responsive UI:** Built with Tailwind CSS, ensuring it looks amazing on any device.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Local Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/ccomp_calorie.git
+   cd ccomp_calorie
+   ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Install PHP dependencies:**
+   ```bash
+   composer install
+   ```
 
-## Learning Laravel
+3. **Install NPM dependencies and build assets:**
+   ```bash
+   npm install
+   npm run build
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+4. **Environment setup:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Note: Make sure to configure your `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` in the `.env` file.*
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. **Run Migrations:**
+   ```bash
+   php artisan migrate
+   ```
 
-## Laravel Sponsors
+6. **Serve the application:**
+   ```bash
+   php artisan serve
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🌍 Ubuntu Server Deployment Guide (Nginx + OpenSSH)
 
-### Premium Partners
+Follow these steps to deploy this application to a production Ubuntu server. Ensure you have root or `sudo` access to the server via SSH.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. SSH into your Server
+Access your Ubuntu server using OpenSSH:
+```bash
+ssh username@<YOUR_SERVER_IP>
+```
 
-## Contributing
+### 2. Install Required Server Packages
+Install Nginx, PHP 8.2 (or your preferred version), Composer, Node.js, and Git.
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx git curl unzip -y
+sudo apt install php-fpm php-mysql php-mbstring php-xml php-bcmath php-curl php-zip -y
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Install Node.js (for compiling frontend assets)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 
-## Code of Conduct
+# Install Composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Clone the Repository
+Navigate to the web root and clone your project:
+```bash
+cd /var/www/
+sudo git clone https://github.com/yourusername/ccomp_calorie.git
+cd ccomp_calorie
+```
 
-## Security Vulnerabilities
+### 4. Setup Laravel Environment
+```bash
+sudo cp .env.example .env
+# Edit .env and update DB credentials and set APP_ENV=production, APP_DEBUG=false
+sudo nano .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Install Dependencies
+sudo composer install --optimize-autoloader --no-dev
+sudo npm install
+sudo npm run build
+
+# Generate App Key and Migrate DB
+sudo php artisan key:generate
+sudo php artisan migrate --force
+```
+
+### 5. Set Directory Permissions
+Laravel needs write access to the `storage` and `bootstrap/cache` directories.
+```bash
+sudo chown -R www-data:www-data /var/www/ccomp_calorie
+sudo find /var/www/ccomp_calorie -type f -exec chmod 644 {} \;
+sudo find /var/www/ccomp_calorie -type d -exec chmod 755 {} \;
+sudo chgrp -R www-data storage bootstrap/cache
+sudo chmod -R ug+rwx storage bootstrap/cache
+```
+
+### 6. Configure Nginx
+Create a new Nginx server block configuration for the application.
+```bash
+sudo nano /etc/nginx/sites-available/ccomp_calorie
+```
+
+Paste the following configuration (replace `<YOUR_SERVER_IP>` with your actual server IP):
+```nginx
+server {
+    listen 80;
+    server_name <YOUR_SERVER_IP>;
+    root /var/www/ccomp_calorie/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+*Note: Check your PHP-FPM version in the `fastcgi_pass` directive if you are using a different PHP version.*
+
+Enable the configuration and restart Nginx:
+```bash
+sudo ln -s /etc/nginx/sites-available/ccomp_calorie /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+Your app is now live at `http://<YOUR_SERVER_IP>`.
 
 ## License
-
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

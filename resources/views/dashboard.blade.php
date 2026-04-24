@@ -1,37 +1,6 @@
 <x-app-layout>
     @section('title', 'Quest Board')
-    @php
-        $target = auth()->user()->daily_calorie_target;
-        $todayLogs = $foodLogs->filter(function($log) { return $log->consumed_at->isToday(); });
-        $consumedToday = $todayLogs->sum('calories');
-        $percentage = min(100, round(($consumedToday / $target) * 100));
-        
-        $yesterdayLogs = $foodLogs->filter(function($log) { return $log->consumed_at->isYesterday(); });
-        $consumedYesterday = $yesterdayLogs->sum('calories');
 
-        $twoDaysAgoLogs = $foodLogs->filter(function($log) { return $log->consumed_at->isSameDay(now()->subDays(2)); });
-        $consumedTwoDaysAgo = $twoDaysAgoLogs->sum('calories');
-
-        $colorClass = 'text-green-500';
-        $strokeClass = 'stroke-green-500';
-        $isOverCalorie = false;
-        if($consumedToday > $target) {
-            $colorClass = 'text-red-500';
-            $strokeClass = 'stroke-red-500';
-            $isOverCalorie = true;
-        } elseif($percentage >= 85) {
-            $colorClass = 'text-yellow-500';
-            $strokeClass = 'stroke-yellow-500';
-        }
-
-        // Meal breakdown
-        $breakdown = [
-            'breakfast' => $todayLogs->where('meal_type', 'breakfast')->sum('calories'),
-            'lunch' => $todayLogs->where('meal_type', 'lunch')->sum('calories'),
-            'dinner' => $todayLogs->where('meal_type', 'dinner')->sum('calories'),
-            'snack' => $todayLogs->where('meal_type', 'snack')->sum('calories'),
-        ];
-    @endphp
 
     <div class="space-y-8 mt-2">
         

@@ -12,8 +12,58 @@ class FoodLogController extends Controller
      */
     public function index()
     {
-        $foodLogs = auth()->user()->foodLogs()->orderBy('consumed_at', 'desc')->get();
-        return view('dashboard', compact('foodLogs'));
+        $user = auth()->user();
+        $target = $user->daily_calorie_target ?: 2000;
+
+        // Query only the last 3 days of logs to optimize memory usage and performance
+        $threeDaysAgo = now()->subDays(2)->startOfDay();
+        $recentLogs = $user->foodLogs()
+            ->where('consumed_at', '>=', $threeDaysAgo)
+            ->orderBy('consumed_at', 'desc')
+            ->get();
+
+        $todayLogs = $recentLogs->filter(fn($log) => $log->consumed_at->isToday());
+        $yesterdayLogs = $recentLogs->filter(fn($log) => $log->consumed_at->isYesterday());
+        $twoDaysAgoLogs = $recentLogs->filter(fn($log) => $log->consumed_at->isSameDay(now()->subDays(2)));
+
+        $consumedToday = $todayLogs->sum('calories');
+        $consumedYesterday = $yesterdayLogs->sum('calories');
+        $consumedTwoDaysAgo = $twoDaysAgoLogs->sum('calories');
+
+        $percentage = $target > 0 ? min(100, round(($consumedToday / $target) * 100)) : 0;
+
+        $colorClass = 'text-green-500';
+        $strokeClass = 'stroke-green-500';
+        $isOverCalorie = false;
+        
+        if ($consumedToday > $target) {
+            $colorClass = 'text-red-500';
+            $strokeClass = 'stroke-red-500';
+            $isOverCalorie = true;
+        } elseif ($percentage >= 85) {
+            $colorClass = 'text-yellow-500';
+            $strokeClass = 'stroke-yellow-500';
+        }
+
+        $breakdown = [
+            'breakfast' => $todayLogs->where('meal_type', 'breakfast')->sum('calories'),
+            'lunch' => $todayLogs->where('meal_type', 'lunch')->sum('calories'),
+            'dinner' => $todayLogs->where('meal_type', 'dinner')->sum('calories'),
+            'snack' => $todayLogs->where('meal_type', 'snack')->sum('calories'),
+        ];
+
+        return view('dashboard', compact(
+            'target',
+            'todayLogs',
+            'consumedToday',
+            'percentage',
+            'consumedYesterday',
+            'consumedTwoDaysAgo',
+            'colorClass',
+            'strokeClass',
+            'isOverCalorie',
+            'breakdown'
+        ));
     }
 
     /**
