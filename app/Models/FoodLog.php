@@ -10,6 +10,7 @@ class FoodLog extends Model
         'name',
         'calories',
         'consumed_at',
+        'meal_type',
     ];
 
     protected function casts(): array

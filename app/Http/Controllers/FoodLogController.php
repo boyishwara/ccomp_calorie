@@ -21,7 +21,7 @@ class FoodLogController extends Controller
      */
     public function create()
     {
-        //
+        return view('food_logs.create');
     }
 
     /**
@@ -33,6 +33,7 @@ class FoodLogController extends Controller
             'name' => 'required|string|max:255',
             'calories' => 'required|integer|min:0',
             'consumed_at' => 'required|date',
+            'meal_type' => 'required|in:breakfast,lunch,dinner,snack',
         ]);
 
         $request->user()->foodLogs()->create($validated);
@@ -69,6 +70,7 @@ class FoodLogController extends Controller
             'name' => 'required|string|max:255',
             'calories' => 'required|integer|min:0',
             'consumed_at' => 'required|date',
+            'meal_type' => 'required|in:breakfast,lunch,dinner,snack',
         ]);
 
         $foodLog->update($validated);

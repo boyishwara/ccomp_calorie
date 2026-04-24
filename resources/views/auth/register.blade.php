@@ -28,6 +28,13 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
+        <!-- Daily Calorie Target -->
+        <div class="mt-4">
+            <x-input-label for="daily_calorie_target" :value="__('Daily Calorie Target (kcal)')" />
+            <x-text-input id="daily_calorie_target" class="block mt-1 w-full" type="number" name="daily_calorie_target" :value="old('daily_calorie_target', 2000)" required min="500" max="10000" />
+            <x-input-error :messages="$errors->get('daily_calorie_target')" class="mt-2" />
+        </div>
+
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
