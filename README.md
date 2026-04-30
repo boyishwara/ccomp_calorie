@@ -69,6 +69,12 @@ sudo apt install -y nodejs
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 ```
+**What these commands do:**
+- `apt update && apt upgrade`: Refreshes your server's package list and upgrades existing software to their latest versions.
+- `apt install nginx ...`: Installs the Nginx web server, Git for version control, and helpful utilities like `curl` and `unzip`.
+- `apt install php-fpm ...`: Installs PHP and the specific PHP extensions that Laravel requires to run properly.
+- `curl ... | bash -` and `apt install nodejs`: Adds the official Node.js repository and installs Node.js along with npm (needed to build frontend assets).
+- `curl ... | php` and `mv composer.phar ...`: Downloads the Composer installer, runs it, and moves the executable to `/usr/local/bin` so you can use the `composer` command globally.
 
 ### 3. Clone the Repository
 Navigate to the web root and clone your project:
@@ -77,6 +83,10 @@ cd /var/www/
 sudo git clone https://github.com/yourusername/ccomp_calorie.git
 cd ccomp_calorie
 ```
+**What these commands do:**
+- `cd /var/www/`: Moves into the default web server directory on Ubuntu.
+- `git clone ...`: Downloads your project's source code directly from GitHub onto the server.
+- `cd ccomp_calorie`: Moves into your newly downloaded project folder.
 
 ### 4. Install and Configure MySQL
 Install the MySQL server:
@@ -93,6 +103,12 @@ GRANT ALL PRIVILEGES ON ccomp_calorie2.* TO 'admin_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
+**What these commands do:**
+- `apt install mysql-server`: Installs the MySQL database server.
+- `CREATE DATABASE`: Makes a fresh database for the Laravel app.
+- `CREATE USER`: Sets up a dedicated MySQL user with a secure password.
+- `GRANT ALL PRIVILEGES`: Gives this new user full read/write access to the application's database.
+- `FLUSH PRIVILEGES`: Tells MySQL to reload its permission tables so the new user can log in immediately.
 
 ### 5. Setup Laravel Environment
 ```bash
@@ -112,9 +128,16 @@ sudo npm run build
 sudo php artisan key:generate
 sudo php artisan migrate --force
 ```
+**What these commands do:**
+- `cp .env.example .env`: Duplicates the example environment file to act as your application's actual configuration file.
+- `composer install ...`: Installs PHP dependencies. The `--no-dev` flag skips development tools, and `--optimize-autoloader` speeds up application performance in production.
+- `npm install` and `npm run build`: Downloads JavaScript/CSS packages and compiles your frontend assets (like Tailwind CSS) into optimized files for production.
+- `php artisan key:generate`: Creates a unique, secure encryption key for your application (used for sessions and cookies).
+- `php artisan migrate --force`: Runs the database migrations to build your tables. The `--force` flag is required to bypass Laravel's production warning.
 
 ### 6. Set Directory Permissions
 Laravel needs write access to the `storage` and `bootstrap/cache` directories.
+
 ```bash
 sudo chown -R www-data:www-data /var/www/ccomp_calorie
 sudo find /var/www/ccomp_calorie -type f -exec chmod 644 {} \;
@@ -122,6 +145,13 @@ sudo find /var/www/ccomp_calorie -type d -exec chmod 755 {} \;
 sudo chgrp -R www-data storage bootstrap/cache
 sudo chmod -R ug+rwx storage bootstrap/cache
 ```
+
+**What these commands do:**
+- `chown -R www-data:www-data`: Recursively changes the owner and group of the entire project to `www-data`, the default user for the Nginx web server.
+- `find ... -type f -exec chmod 644`: Finds all files (`-type f`) and sets their permissions to `644` (read/write for owner, read-only for others) for security.
+- `find ... -type d -exec chmod 755`: Finds all directories (`-type d`) and sets their permissions to `755` (read/write/execute for owner, read/execute for others) so they can be accessed and traversed.
+- `chgrp -R www-data ...`: Ensures the web server group specifically owns the `storage` and `bootstrap/cache` directories.
+- `chmod -R ug+rwx ...`: Grants full read, write, and execute (`rwx`) permissions to the user and group (`ug`) for those specific directories, allowing Laravel to save logs, cache, and uploads.
 
 ### 7. Configure Nginx
 Create a new Nginx server block configuration for the application.
@@ -172,6 +202,10 @@ sudo ln -s /etc/nginx/sites-available/ccomp_calorie /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```
+**What these commands do:**
+- `ln -s ...`: Creates a symbolic link (shortcut) from `sites-available` to `sites-enabled`. This is how you tell Nginx to turn on this specific site configuration.
+- `nginx -t`: Tests your new Nginx configuration to ensure there are no syntax errors or typos before applying it.
+- `systemctl restart nginx`: Restarts the Nginx web server so that your new site configuration goes live.
 
 Your app is now live at `http://<YOUR_SERVER_IP>`.
 
