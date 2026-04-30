@@ -12,7 +12,7 @@ A modern, gamified calorie tracking web application built with Laravel. It helps
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/ccomp_calorie.git
+   git clone https://github.com/boyishwara/ccomp_calorie.git
    cd ccomp_calorie
    ```
 
