@@ -78,10 +78,29 @@ sudo git clone https://github.com/yourusername/ccomp_calorie.git
 cd ccomp_calorie
 ```
 
-### 4. Setup Laravel Environment
+### 4. Install and Configure MySQL
+Install the MySQL server:
+```bash
+sudo apt update
+sudo apt install mysql-server -y
+```
+
+Access MySQL (using `sudo mysql`) and run the following commands to create your database and user:
+```sql
+CREATE DATABASE ccomp_calorie2;
+CREATE USER 'admin_user'@'localhost' IDENTIFIED BY 'Boy@123';
+GRANT ALL PRIVILEGES ON ccomp_calorie2.* TO 'admin_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### 5. Setup Laravel Environment
 ```bash
 sudo cp .env.example .env
-# Edit .env and update DB credentials and set APP_ENV=production, APP_DEBUG=false
+# Edit .env, set APP_ENV=production, APP_DEBUG=false, and update your DB credentials to match the ones created above:
+# DB_DATABASE=ccomp_calorie2
+# DB_USERNAME=admin_user
+# DB_PASSWORD=Boy@123
 sudo nano .env
 
 # Install Dependencies
@@ -94,7 +113,7 @@ sudo php artisan key:generate
 sudo php artisan migrate --force
 ```
 
-### 5. Set Directory Permissions
+### 6. Set Directory Permissions
 Laravel needs write access to the `storage` and `bootstrap/cache` directories.
 ```bash
 sudo chown -R www-data:www-data /var/www/ccomp_calorie
@@ -104,7 +123,7 @@ sudo chgrp -R www-data storage bootstrap/cache
 sudo chmod -R ug+rwx storage bootstrap/cache
 ```
 
-### 6. Configure Nginx
+### 7. Configure Nginx
 Create a new Nginx server block configuration for the application.
 ```bash
 sudo nano /etc/nginx/sites-available/ccomp_calorie
@@ -145,7 +164,7 @@ server {
     }
 }
 ```
-*Note: Check your PHP-FPM version in the `fastcgi_pass` directive if you are using a different PHP version.*
+*Note: Check your PHP-FPM version in the `fastcgi_pass` directive if you are using a different PHP version. You can verify the exact socket name by running `ls -la /var/run/php/` and looking for the `.sock` file (e.g., `php8.2-fpm.sock`).*
 
 Enable the configuration and restart Nginx:
 ```bash
